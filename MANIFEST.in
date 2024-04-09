@@ -1,0 +1,10 @@
+include README.md
+include LICENSE
+
+global-exclude .git*
+global-exclude \#*
+
+global-exclude *.c
+global-exclude *.cpp
+global-exclude *.h
+global-exclude .venv*
