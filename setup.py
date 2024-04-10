@@ -3,8 +3,7 @@
 # step 2: twine upload dist/* --verbose
 # https://medium.com/the-research-nest/how-to-publish-your-python-code-as-a-pip-package-in-5-simple-steps-3b36286293ec
 from setuptools import setup
-
-VERSION = '0.0.1'
+import stellrent_auth
 
 with open('requirements.txt') as requirements_file:
     REQUIRED_MODULES = [line.strip() for line in requirements_file]
@@ -18,7 +17,7 @@ def readme():
     
 setup(
     name='stellrent-auth',
-    version=VERSION,
+    version=stellrent_auth.__version__,
     author='Marcus R. Magalhães',
     author_email='marcusrodrigues.magalhaes@stellantis.com',
     description='OAUTH2 and OpenID standards',

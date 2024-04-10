@@ -1,0 +1,6 @@
+{
+    "python.testing.pytestEnabled": true,
+    "python.testing.cwd": "${workspaceFolder}",
+    "python.testing.promptToConfigure": false,
+    "python.envFile":   "${workspaceFolder}/tests/.env",
+}

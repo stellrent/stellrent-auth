@@ -1,10 +1,9 @@
 [project]
 name = "stellrent-auth"
-version = "0.0.1"
 authors = [
   { name="Marcus Rodrigues Magalhães", email="marcusrodrigues.magalhaes@stellantis.com" },
 ]
-description = "OAUTH2 and OpenID standards"
+dynamic = ["version", "description"]
 readme = "README.md"
 # license = 'MIT'
 requires-python = '>=3.7'
