@@ -2,8 +2,9 @@ import os
 import jwt
 import requests
 import logging
-
+from functools import wraps
 from requests_oauthlib import OAuth2Session
+from flask import request
 
 # https://oauthlib.readthedocs.io/en/latest/index.html
 from oauthlib.oauth2 import BackendApplicationClient
@@ -18,7 +19,7 @@ class Oauth2:
     def __init__(self):
         self.STLRNT_AUTH_IDP_URL = os.environ['STLRNT_AUTH_IDP_URL']
         self.STLRNT_AUTH_API_CLIENT_ID = os.environ['STLRNT_AUTH_API_CLIENT_ID']
-        self.STLRNT_AUTH_OID_CONFIG_URL = self.STLRNT_AUTH_IDP_URL = "/application/o/" + os.environ['STLRNT_AUTH_APPLICATION_SLUG'] + "/.well-known/openid-configuration"
+        self.STLRNT_AUTH_OID_CONFIG_URL = self.STLRNT_AUTH_IDP_URL + "/application/o/" + os.environ['STLRNT_AUTH_APPLICATION_SLUG'] + "/.well-known/openid-configuration"
         self.STLRNT_AUTH_API_CLIENT_USER = os.environ['STLRNT_AUTH_API_CLIENT_USER']
         self.STLRNT_AUTH_API_CLIENT_PASS = os.environ['STLRNT_AUTH_API_CLIENT_PASS']
 
@@ -160,32 +161,32 @@ class Oauth2:
         )
         return token_data
 
-# https://github.com/curityio/flask-of-oil
-def grant_required(require_grants=[]):
-    def inner_decorator(function):
-        @wraps(function)
-        def wrapper(*args, **kwargs):
-            if "Authorization" not in request.headers:
-                return Unauthorized("Access to this resource requires Authorization header parameter").make_response()
-            valid_token = auth.validate_bearer_token(request.headers['Authorization'])
-            
-            if valid_token:
+    # https://github.com/curityio/flask-of-oil
+    def grant_required(self, require_grants=[]):
+        def inner_decorator(function):
+            @wraps(function)
+            def wrapper(*args, **kwargs):
+                if "Authorization" not in request.headers:
+                    return Unauthorized("Access to this resource requires Authorization header parameter").make_response()
+                valid_token = self.validate_bearer_token(request.headers['Authorization'])
+                
+                if valid_token:
 
-                if require_grants is not None and len(require_grants) > 0:
-                    
-                    user_grants = auth.user_grants_from_token(request.headers['Authorization'])
-                    set_require_grants = set(require_grants)
-                    set_user_grants = set(user_grants)
-                    user_has_grant = set_user_grants.intersection(set_require_grants)
-                    if len(user_has_grant) > 0 :
-                        return function(*args, **kwargs)
-                    else:
-                        logging.getLogger().debug("Endpoint Grant required: " + str(require_grants))
-                        logging.getLogger().debug("User Grant: " + str(user_grants))
-                        return Forbidden('You do not have permission to access this resource').make_response()
+                    if require_grants is not None and len(require_grants) > 0:
+                        
+                        user_grants = self.user_grants_from_token(request.headers['Authorization'])
+                        set_require_grants = set(require_grants)
+                        set_user_grants = set(user_grants)
+                        user_has_grant = set_user_grants.intersection(set_require_grants)
+                        if len(user_has_grant) > 0 :
+                            return function(*args, **kwargs)
+                        else:
+                            logging.getLogger().debug("Endpoint Grant required: " + str(require_grants))
+                            logging.getLogger().debug("User Grant: " + str(user_grants))
+                            return Forbidden('You do not have permission to access this resource').make_response()
 
-                return function(*args, **kwargs)
-            return Unauthorized("Invalid Token").make_response()
-        wrapper.__name__ = function.__name__
-        return wrapper
-    return inner_decorator
+                    return function(*args, **kwargs)
+                return Unauthorized("Invalid Token").make_response()
+            wrapper.__name__ = function.__name__
+            return wrapper
+        return inner_decorator
