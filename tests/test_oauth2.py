@@ -12,3 +12,7 @@ def test_oauth2():
     )
     def test_route():
         return None
+    
+    def test_public_route():
+        return None
+    

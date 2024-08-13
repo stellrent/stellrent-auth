@@ -1,12 +1,10 @@
-import os
+from decouple import config
 import jwt
 import requests
 import logging
 from functools import wraps
 from requests_oauthlib import OAuth2Session
 from flask import request
-
-# https://oauthlib.readthedocs.io/en/latest/index.html
 from oauthlib.oauth2 import BackendApplicationClient
 from oauthlib.oauth2.rfc6749.errors import OAuth2Error
 from stellrent_response.json_response import Unauthorized, Forbidden
@@ -15,13 +13,14 @@ client_token = None
 idp_config_cache = None
 
 class Oauth2:
+    # https://oauthlib.readthedocs.io/en/latest/index.html
 
     def __init__(self):
-        self.STLRNT_AUTH_IDP_URL = os.environ['STLRNT_AUTH_IDP_URL']
-        self.STLRNT_AUTH_API_CLIENT_ID = os.environ['STLRNT_AUTH_API_CLIENT_ID']
-        self.STLRNT_AUTH_OID_CONFIG_URL = self.STLRNT_AUTH_IDP_URL + "/application/o/" + os.environ['STLRNT_AUTH_APPLICATION_SLUG'] + "/.well-known/openid-configuration"
-        self.STLRNT_AUTH_API_CLIENT_USER = os.environ['STLRNT_AUTH_API_CLIENT_USER']
-        self.STLRNT_AUTH_API_CLIENT_PASS = os.environ['STLRNT_AUTH_API_CLIENT_PASS']
+        self.STLRNT_AUTH_IDP_URL = config('STLRNT_AUTH_IDP_URL')
+        self.STLRNT_AUTH_API_CLIENT_ID = config('STLRNT_AUTH_API_CLIENT_ID')
+        self.STLRNT_AUTH_OID_CONFIG_URL = self.STLRNT_AUTH_IDP_URL + "/application/o/" + config('STLRNT_AUTH_APPLICATION_SLUG') + "/.well-known/openid-configuration"
+        self.STLRNT_AUTH_API_CLIENT_USER = config('STLRNT_AUTH_API_CLIENT_USER')
+        self.STLRNT_AUTH_API_CLIENT_PASS = config('STLRNT_AUTH_API_CLIENT_PASS')
 
     def cache_idp_config(self):
         global client_token

@@ -18,7 +18,7 @@ setup(
     name='stellrent-auth',
     author='Marcus R. Magalhães',
     author_email='marcusrodrigues.magalhaes@stellantis.com',
-    description='OAUTH2 and OpenID standards',
+    description='Authentications Methods: Basic Auth, OAUTH2 and OpenID standards',
     packages=['stellrent_auth'],
     include_package_data=True,
     long_description=readme(),
